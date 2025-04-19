@@ -25,7 +25,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="h-screen flex dark:bg-[#1F1F1F]">
       <Navigation />
       <main className="flex-1 h-full overflow-y-auto relative">
-        <div className="absolute right-0">
+        <div className="absolute right-6 top-3 z-[99999]">
           <SpaceNavbar />
         </div>
         {children}
