@@ -34,14 +34,15 @@ export function Features() {
         </Card>
         <Card className="border-[#ff8a33]/20 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="text-center text-black dark:text-white">
-              💡 Get Feedback
-            </CardTitle>
+          <a href="/roadmap" className="block">
+          <CardTitle className="text-center text-black dark:text-white">
+           💡 Get Personalized Roadmaps
+          </CardTitle>
+          </a>
           </CardHeader>
           <CardContent className="text-center">
             <p className="text-gray-600 dark:text-gray-300">
-              Receive clear, actionable feedback to help you improve and learn
-              more effectively.
+              Receive clear and enhanced roadmaps and schedules to manage your time effectively and overcome procastination.
             </p>
           </CardContent>
         </Card>
