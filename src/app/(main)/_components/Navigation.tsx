@@ -64,7 +64,7 @@ function Navigation() {
     isResizingRef.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-  };
+  };    
 
   const resetWidth = () => {
     if (sidebarRef.current && navbarRef.current) {

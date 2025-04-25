@@ -5,11 +5,13 @@ export function Features() {
     <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="border-[#ff8a33]/20 dark:bg-gray-800">
-          <CardHeader>
-            <CardTitle className="text-center text-black dark:text-white">
-              📝 Upload Assignments
-            </CardTitle>
-          </CardHeader>
+        <CardHeader>
+          <a href="/upload" className="block">
+          <CardTitle className="text-center text-black dark:text-white">
+            📝 Upload Assignments
+          </CardTitle>
+          </a>
+        </CardHeader>
           <CardContent className="text-center">
             <p className="text-gray-600 dark:text-gray-300">
               Easily upload your graded work and let our AI analyze your
