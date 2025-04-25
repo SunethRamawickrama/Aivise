@@ -10,6 +10,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 export async function POST(req: NextRequest){
     try{
         const {fileUrl, folderId} = await req.json();
+        console.log( "extrcated the request successfully " + fileUrl + " " + folderId)
 
         const supabaseResp = await fetch(fileUrl);
         
@@ -17,31 +18,37 @@ export async function POST(req: NextRequest){
             return NextResponse.json({ error: "Failed to download file" }, { status: 400 });
         }
 
+        console.log("supabase response was successful" + supabaseResp)
+
         const contentType = supabaseResp.headers.get("content-type");
         const buffer = Buffer.from(await supabaseResp.arrayBuffer());
 
+        console.log("buffer works");
+
         const model = genAI.getGenerativeModel({
-            model: "models/gemini-pro-vision",
-        });
+          model: "models/gemini-1.5-flash",
+      });      
         
-        const result = await model.generateContent({
-            contents: [
+      const result = await model.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: "Please read this document and provide constructive feedback for improvement." },
               {
-                role: "user",
-                parts: [
-                  { text: "Please read this document and provide constructive feedback for improvement." },
-                  {
-                    inlineData: {
-                      mimeType: contentType || "application/pdf",
-                      data: buffer.toString("base64"),
-                    },
-                  },
-                ],
+                inlineData: {
+                  mimeType: contentType || "application/pdf",
+                  data: buffer.toString("base64"),
+                },
               },
             ],
-        });
-          
-        const feedback = result.response.text();
+          },
+        ],
+      });
+      
+      const feedback = await result.response.text();
+
+        console.log("Gemini resposne " + feedback);
       
         return NextResponse.json({
             success: true,
