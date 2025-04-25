@@ -1,7 +1,10 @@
 'use client';
 import React from 'react'
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+
+  const router = useRouter();
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +23,18 @@ export default function Page() {
       method: 'POST',
       body: formData,
     })
-    .then(resp => {
+    .then(async (resp) => {
       if (resp.ok){
+
+        const data = await resp.json();
+        const folderId = data.folderId;
+
+        if (!folderId) {
+          alert('error fetching folder id')
+        }
+
         alert('file uploaded successfully! Now redirecting to the canvas :)')
-        window.location.href = '/space';
+        router.push(`/space/${folderId}`);
       }
       else {
         alert('Error uploading file. Try again :(')
