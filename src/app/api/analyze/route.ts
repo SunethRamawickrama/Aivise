@@ -27,7 +27,7 @@ export async function POST(req: NextRequest){
           {
             role: "user",
             parts: [
-              { text: "Please read this document and provide constructive feedback for improvement." },
+              { text: "Please analyze this document and provide constructive feedback for improvement." },
               {
                 inlineData: {
                   mimeType: contentType || "application/pdf",

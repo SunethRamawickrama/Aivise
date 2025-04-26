@@ -22,9 +22,52 @@ export async function Canvas({ spaceId }: CanvasProps) {
     notFound();
   }
 
-  const handleButtonClick = ()=> {
-    console.log('hello world')
-  }
+  const getFilePreview = () => {
+    const fileUrl = folder.fileUrl;
+    const fileExtension = fileUrl.split('.').pop()?.toLowerCase();
+
+    // Handle PDF files
+    if (fileExtension === 'pdf') {
+      return (
+        <iframe
+          src={fileUrl}
+          className="w-full h-full"
+        />
+      );
+    }
+    
+    // Handle Word documents
+    else if (fileExtension === 'docx' || fileExtension === 'doc') {
+      return (
+        <iframe
+          src={`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`}
+          className="w-full h-full"
+        />
+      );
+    }
+    
+    // Handle image files
+    else if (['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension || '')) {
+      return (
+        <img
+          src={fileUrl}
+          alt={folder.name}
+          className="w-full h-full object-contain"
+        />
+      );
+    }
+    
+    // Default case for unsupported files
+    else {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Preview not available for this file type</p>
+        </div>
+      );
+    }
+  };
+
+
 
 
   return (
@@ -34,10 +77,7 @@ export async function Canvas({ spaceId }: CanvasProps) {
     <main className="h-full w-full relative bg-netural-100 touch-none">
       <div className="h-full flex items-center justify-center p-4">
       <div title="" className="w-full max-w-4xl h-[80vh] shadow-md rounded-md overflow-hidden">
-        <iframe
-          src={folder.fileUrl}
-          className="w-full h-full"
-        ></iframe>
+        {getFilePreview()}
       </div>
       </div>
 
