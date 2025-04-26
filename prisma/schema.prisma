@@ -16,3 +16,14 @@ model Folder {
   updatedAt DateTime @updatedAt
   userId    String  // from clerk auth 
 }
+
+model Course {
+  id              String   @id @default(uuid())
+  courseName      String
+  courseNumber    String
+  instructor      String
+  fileUrl         String
+  assignments   String[] 
+  userId          String  // from clerk auth
+  
+}

@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+import { model} from "@/lib/gemini"
 
 export async function POST(req: NextRequest){
     try{
@@ -24,10 +21,6 @@ export async function POST(req: NextRequest){
         const buffer = Buffer.from(await supabaseResp.arrayBuffer());
 
         console.log("buffer works");
-
-        const model = genAI.getGenerativeModel({
-          model: "models/gemini-1.5-flash",
-      });      
         
       const result = await model.generateContent({
         contents: [
