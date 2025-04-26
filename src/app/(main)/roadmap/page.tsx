@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
+import { Plus } from 'lucide-react';
 
 export default function Page() {
   
@@ -70,84 +71,27 @@ export default function Page() {
 
 
   return (
-    <div className="space-y-4">
-      {/* Add Course Button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-      >
-        ➕ Add Course
-      </button>
-
-      {/* Form Section */}
-      {showForm && (
-        <div className="border p-4 rounded-lg shadow-md bg-white space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              name="courseName"
-              onChange={handleFormDataChange}
-              type="text"
-              placeholder="Course Name"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="courseNumber"
-              onChange={handleFormDataChange}
-              type="text"
-              placeholder="Course Number"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="instructor"
-              onChange={handleFormDataChange}
-              type="text"
-              placeholder="Instructor's Name"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            {/* File Upload */}
-            <div className="col-span-1 md:col-span-3 space-y-2">
-              <p className="text-sm text-gray-600">Upload syllabus</p>
-              <input type="file" onChange={handleUpload} />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-2">
-            <button
-              onClick={() => setShowForm(false)}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300"
-            >
-              Cancel
-            </button>
-
-            <button
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-            >
-              Submit Course
-            </button>
-          </div>
-        </div>
-      )}
+    <div className="space-y-6 p-6">
+      {/* Centered Title */}
+      <h1 className="text-3xl font-bold text-gray-800 text-center mb-2">Student Schedule</h1>
 
       {/* Course Dropdown */}
-      <div className="relative w-full max-w-sm">
-
-      <select
-        value={selectedCourse}
-        onChange={(e) => setSelectedCourse(e.target.value)}
-        className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
-        <option disabled value="">
-          Select a course
-        </option>
-
-        {courses.map((course: any) => (
-          <option key={course.id} value={course.id}>
-            {course.courseNumber} - {course.courseName}
+      <div className="relative w-full max-w-sm mx-auto mb-4">
+        <select
+          value={selectedCourse}
+          onChange={(e) => setSelectedCourse(e.target.value)}
+          className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option disabled value="">
+            Select a course
           </option>
-        ))}
-      </select>
 
+          {courses.map((course: any) => (
+            <option key={course.id} value={course.id}>
+              {course.courseNumber} - {course.courseName}
+            </option>
+          ))}
+        </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
           <svg
             className="h-4 w-4"
@@ -164,7 +108,71 @@ export default function Page() {
         </div>
       </div>
 
-      <Calendar />
+      {/* Centered Add Course Button above calendar */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-md"
+        >
+          <Plus className="w-5 h-5" />
+          Add Course
+        </button>
+      </div>
+
+      <div className="max-w-5xl mx-auto">
+        {/* Form Section */}
+        {showForm && (
+          <div className="border p-4 rounded-lg shadow-md bg-white space-y-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                name="courseName"
+                onChange={handleFormDataChange}
+                type="text"
+                placeholder="Course Name"
+                className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="courseNumber"
+                onChange={handleFormDataChange}
+                type="text"
+                placeholder="Course Number"
+                className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="instructor"
+                onChange={handleFormDataChange}
+                type="text"
+                placeholder="Instructor's Name"
+                className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              {/* File Upload */}
+              <div className="col-span-1 md:col-span-3 space-y-2">
+                <p className="text-sm text-gray-600">Upload syllabus</p>
+                <input type="file" onChange={handleUpload} />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                onClick={() => setShowForm(false)}
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              >
+                Submit Course
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Calendar */}
+        <Calendar />
+      </div>
     </div>
   );
 }
