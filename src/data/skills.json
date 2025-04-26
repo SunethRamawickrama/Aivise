@@ -1,0 +1,122 @@
+[
+    {
+        "skill": "engineering",
+        "count": 85
+    },
+    {
+        "skill": "machine_learning",
+        "count": 63
+    },
+    {
+        "skill": "deep_learning",
+        "count": 47
+    },
+    {
+        "skill": "data_analysis",
+        "count": 46
+    },
+    {
+        "skill": "aws",
+        "count": 37
+    },
+    {
+        "skill": "data_visualization",
+        "count": 33
+    },
+    {
+        "skill": "big_data",
+        "count": 31
+    },
+    {
+        "skill": "python",
+        "count": 31
+    },
+    {
+        "skill": "data_analytics",
+        "count": 30
+    },
+    {
+        "skill": "agile",
+        "count": 28
+    },
+    {
+        "skill": "mathematics",
+        "count": 25
+    },
+    {
+        "skill": "excel",
+        "count": 24
+    },
+    {
+        "skill": "computer_vision",
+        "count": 23
+    },
+    {
+        "skill": "azure",
+        "count": 17
+    },
+    {
+        "skill": "pipelines",
+        "count": 16
+    },
+    {
+        "skill": "apis",
+        "count": 14
+    },
+    {
+        "skill": "bigquery",
+        "count": 14
+    },
+    {
+        "skill": "nlp",
+        "count": 14
+    },
+    {
+        "skill": "sql",
+        "count": 14
+    },
+    {
+        "skill": "ml",
+        "count": 13
+    },
+    {
+        "skill": "data_mining",
+        "count": 13
+    },
+    {
+        "skill": "models",
+        "count": 12
+    },
+    {
+        "skill": "quality",
+        "count": 12
+    },
+    {
+        "skill": "phd",
+        "count": 10
+    },
+    {
+        "skill": "research",
+        "count": 10
+    },
+    {
+        "skill": "gcp",
+        "count": 10
+    },
+    {
+        "skill": "classification",
+        "count": 9
+    },
+    {
+        "skill": "git",
+        "count": 9
+    },
+    {
+        "skill": "consulting",
+        "count": 9
+    },
+    {
+        "skill": "industrial",
+        "count": 9
+    }
+]
