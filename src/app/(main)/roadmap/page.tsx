@@ -2,17 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
 
+type Course = {
+  id: string;
+  courseName: string;
+  courseNumber: string;
+  instructor: string;
+};
+
 export default function Page() {
-  
   const [showForm, setShowForm] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState ("");
+  const [selectedCourse, setSelectedCourse] = useState("");
   const [formData, setFormData] = useState({
     courseName: '',
     courseNumber: '',
     instructor: '',
   });
 
-  const [ courses, setCourses ] = useState ([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [assignmentsForTheCurrentCourse, setAssignmentsForTheCurrentCourse] = useState([]);
+  const [currentCourse, setCurrentCourse] = useState("");
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,6 +44,7 @@ export default function Page() {
 
       if (resp.ok) {
         alert('Syllabus uploaded and course info sent successfully :)');
+        await loadCourses(); // Reload courses after adding one
       } else {
         alert('Error uploading file and course info :(');
       }
@@ -50,17 +59,26 @@ export default function Page() {
 
   const loadCourses = async () => {
     try {
-      const resp = await fetch('/api/roadmap/courses'); // Make sure this route exists
-  
+      const resp = await fetch('/api/roadmap/courses');
       if (!resp.ok) {
         alert('Error fetching courses :(');
         return;
       }
-  
-      const { courses } = await resp.json(); // Destructure from the JSON response
-      setCourses(courses); // Now it's defined!
+
+      const { courses } = await resp.json();
+      setCourses(courses);
     } catch (error) {
       console.error('Error loading courses:', error);
+    }
+  };
+
+  const fetchAssignments = async (courseNumber: string) => {
+    try {
+      const resp = await fetch(`/api/roadmap/assignments?courseNumber=${courseNumber}`);
+      const data = await resp.json();
+      setAssignmentsForTheCurrentCourse(data.assignments || []);
+    } catch (err) {
+      console.error("Failed to load assignments:", err);
     }
   };
 
@@ -68,6 +86,11 @@ export default function Page() {
     loadCourses();
   }, []);
 
+  useEffect(() => {
+    if (currentCourse) {
+      fetchAssignments(currentCourse);
+    }
+  }, [currentCourse]);
 
   return (
     <div className="space-y-4">
@@ -122,6 +145,7 @@ export default function Page() {
 
             <button
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              onClick={() => alert("You need to upload the file to complete submission")}
             >
               Submit Course
             </button>
@@ -131,22 +155,29 @@ export default function Page() {
 
       {/* Course Dropdown */}
       <div className="relative w-full max-w-sm">
+        <select
+          value={selectedCourse}
+          onChange={(e) => {
+            const selectedId = e.target.value;
+            setSelectedCourse(selectedId);
 
-      <select
-        value={selectedCourse}
-        onChange={(e) => setSelectedCourse(e.target.value)}
-        className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
-        <option disabled value="">
-          Select a course
-        </option>
-
-        {courses.map((course: any) => (
-          <option key={course.id} value={course.id}>
-            {course.courseNumber} - {course.courseName}
+            const selected = courses.find(c => c.id === selectedId);
+            if (selected) {
+              setCurrentCourse(selected.courseNumber); // This will trigger fetchAssignments via useEffect
+            }
+          }}
+          className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option disabled value="">
+            Select a course
           </option>
-        ))}
-      </select>
+
+          {courses.map((course) => (
+            <option key={course.id} value={course.id}>
+              {course.courseNumber} - {course.courseName}
+            </option>
+          ))}
+        </select>
 
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
           <svg
@@ -164,7 +195,7 @@ export default function Page() {
         </div>
       </div>
 
-      <Calendar />
+      <Calendar assignments={assignmentsForTheCurrentCourse} />
     </div>
   );
 }
