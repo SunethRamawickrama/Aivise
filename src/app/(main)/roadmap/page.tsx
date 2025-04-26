@@ -1,6 +1,7 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
+import { Assignment } from './components/Calendar';
 
 type Course = {
   id: string;
@@ -11,7 +12,7 @@ type Course = {
 
 export default function Page() {
   const [showForm, setShowForm] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState('');
   const [formData, setFormData] = useState({
     courseName: '',
     courseNumber: '',
@@ -19,16 +20,12 @@ export default function Page() {
   });
 
   const [courses, setCourses] = useState<Course[]>([]);
-  const [assignmentsForTheCurrentCourse, setAssignmentsForTheCurrentCourse] = useState([]);
-  const [currentCourse, setCurrentCourse] = useState("");
+  const [assignmentsForTheCurrentCourse, setAssignmentsForTheCurrentCourse] = useState<Assignment[]>([]);
+  const [currentCourse, setCurrentCourse] = useState('');
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
-    if (!file) {
-      alert("No file selected :(");
-      return;
-    }
+    if (!file) return alert('No file selected :(');
 
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -43,10 +40,10 @@ export default function Page() {
       });
 
       if (resp.ok) {
-        alert('Syllabus uploaded and course info sent successfully :)');
-        await loadCourses(); // Reload courses after adding one
+        alert('Syllabus uploaded successfully!');
+        await loadCourses();
       } else {
-        alert('Error uploading file and course info :(');
+        alert('Error uploading file.');
       }
     } catch (error) {
       console.error(error);
@@ -60,10 +57,7 @@ export default function Page() {
   const loadCourses = async () => {
     try {
       const resp = await fetch('/api/roadmap/courses');
-      if (!resp.ok) {
-        alert('Error fetching courses :(');
-        return;
-      }
+      if (!resp.ok) return alert('Error fetching courses');
 
       const { courses } = await resp.json();
       setCourses(courses);
@@ -78,7 +72,7 @@ export default function Page() {
       const data = await resp.json();
       setAssignmentsForTheCurrentCourse(data.assignments || []);
     } catch (err) {
-      console.error("Failed to load assignments:", err);
+      console.error('Failed to load assignments:', err);
     }
   };
 
@@ -102,50 +96,42 @@ export default function Page() {
         ➕ Add Course
       </button>
 
-      {/* Form Section */}
+      {/* Course Form */}
       {showForm && (
         <div className="border p-4 rounded-lg shadow-md bg-white space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               name="courseName"
               onChange={handleFormDataChange}
-              type="text"
               placeholder="Course Name"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-md px-4 py-2"
             />
             <input
               name="courseNumber"
               onChange={handleFormDataChange}
-              type="text"
               placeholder="Course Number"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-md px-4 py-2"
             />
             <input
               name="instructor"
               onChange={handleFormDataChange}
-              type="text"
-              placeholder="Instructor's Name"
-              className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Instructor"
+              className="border rounded-md px-4 py-2"
             />
 
-            {/* File Upload */}
-            <div className="col-span-1 md:col-span-3 space-y-2">
+            <div className="col-span-3">
               <p className="text-sm text-gray-600">Upload syllabus</p>
               <input type="file" onChange={handleUpload} />
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-2">
-            <button
-              onClick={() => setShowForm(false)}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300"
-            >
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setShowForm(false)} className="bg-gray-200 px-4 py-2 rounded">
               Cancel
             </button>
-
             <button
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-              onClick={() => alert("You need to upload the file to complete submission")}
+              onClick={() => alert('Please upload the file to complete submission')}
+              className="bg-green-600 text-white px-4 py-2 rounded"
             >
               Submit Course
             </button>
@@ -153,7 +139,7 @@ export default function Page() {
         </div>
       )}
 
-      {/* Course Dropdown */}
+      {/* Course Selector */}
       <div className="relative w-full max-w-sm">
         <select
           value={selectedCourse}
@@ -161,40 +147,23 @@ export default function Page() {
             const selectedId = e.target.value;
             setSelectedCourse(selectedId);
 
-            const selected = courses.find(c => c.id === selectedId);
-            if (selected) {
-              setCurrentCourse(selected.courseNumber); // This will trigger fetchAssignments via useEffect
-            }
+            const selected = courses.find((c) => c.id === selectedId);
+            if (selected) setCurrentCourse(selected.courseNumber);
           }}
-          className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full border rounded-lg px-4 py-2"
         >
-          <option disabled value="">
+          <option value="" disabled>
             Select a course
           </option>
-
           {courses.map((course) => (
             <option key={course.id} value={course.id}>
               {course.courseNumber} - {course.courseName}
             </option>
           ))}
         </select>
-
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
       </div>
 
+      {/* Calendar Component */}
       <Calendar assignments={assignmentsForTheCurrentCourse} />
     </div>
   );

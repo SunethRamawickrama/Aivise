@@ -1,9 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
 
 export interface Assignment {
-  dueDate: string; // Various formats (e.g., "Feb 10", "Before class starts")
+  dueDate: string; // e.g., "Feb 10", "Feb 10, 8-9PM", "Before class starts"
   effortNotes: string;
   assignmentName: string;
   estimatedEffort: string;
@@ -16,7 +19,6 @@ interface CalendarProps {
 export default function Calendar({ assignments }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(dayjs());
 
-  // Handle navigation between months
   const goToNextMonth = () => setCurrentDate((prevDate) => prevDate.add(1, 'month'));
   const goToPreviousMonth = () => setCurrentDate((prevDate) => prevDate.subtract(1, 'month'));
 
@@ -24,16 +26,16 @@ export default function Calendar({ assignments }: CalendarProps) {
   const endOfMonth = currentDate.endOf('month');
   const daysInMonth = endOfMonth.date();
   const startWeekDay = startOfMonth.day(); // 0 = Sunday
+
   const daysArray = Array.from({ length: startWeekDay + daysInMonth }, (_, i) => {
     if (i < startWeekDay) return null;
     return startOfMonth.date(i - startWeekDay + 1);
   });
 
-  // Function to fetch assignments for a specific date
   const getAssignmentsForDay = (date: dayjs.Dayjs) => {
     return assignments.filter((assignment) => {
-      const assignmentDate = dayjs(assignment.dueDate, ['MMM D', 'YYYY-MM-DD', 'MMM D, h:mmA']);
-      return assignmentDate.isSame(date, 'day');
+      const parsedDate = dayjs(assignment.dueDate, ['MMM D', 'MMM D, hA', 'MMM D, h:mmA', 'YYYY-MM-DD'], true);
+      return parsedDate.isValid() && parsedDate.isSame(date, 'day');
     });
   };
 
@@ -46,14 +48,14 @@ export default function Calendar({ assignments }: CalendarProps) {
         <button onClick={goToNextMonth} className="text-xl font-semibold">{'>'}</button>
       </div>
 
-      {/* Calendar Weekdays */}
+      {/* Weekday Headers */}
       <div className="grid grid-cols-7 gap-2 text-sm text-center font-semibold text-gray-700 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div key={day}>{day}</div>
         ))}
       </div>
 
-      {/* Calendar Days */}
+      {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-2">
         {daysArray.map((date, index) => (
           <div
