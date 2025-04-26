@@ -10,20 +10,20 @@ datasource db {
 
 model Folder {
   id        String   @id @default(uuid())
-  name      String
-  fileUrl   String
-  createdAt DateTime @default(now())
+  name      String   // Add the type here (String)
+  createdAt DateTime @default(now()) // Add the type and default value
   updatedAt DateTime @updatedAt
-  userId    String  // from clerk auth 
+  fileUrl   String
+  userId    String  // from Clerk auth
 }
 
 model Course {
-  id              String   @id @default(uuid())
-  courseName      String
-  courseNumber    String
-  instructor      String
-  fileUrl         String
-  assignments   String[] 
-  userId          String  // from clerk auth
-  
+  id           String   @id @default(uuid())
+  courseName   String
+  courseNumber String
+  instructor   String
+  fileUrl      String
+  userId       String
+  assignments  Json[]   // Store assignments as an array of JSON objects
 }
+
