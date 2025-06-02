@@ -1,7 +1,8 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import Calendar from './components/Calendar';
-import { Assignment } from './components/Calendar';
+"use client";
+import React, { useState, useEffect } from "react";
+import Calendar from "./components/Calendar";
+import { Assignment } from "./components/Calendar";
+import GeneratePlan from "./components/GeneratePlan";
 
 type Course = {
   id: string;
@@ -12,38 +13,39 @@ type Course = {
 
 export default function Page() {
   const [showForm, setShowForm] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState("");
   const [formData, setFormData] = useState({
-    courseName: '',
-    courseNumber: '',
-    instructor: '',
+    courseName: "",
+    courseNumber: "",
+    instructor: "",
   });
 
   const [courses, setCourses] = useState<Course[]>([]);
-  const [assignmentsForTheCurrentCourse, setAssignmentsForTheCurrentCourse] = useState<Assignment[]>([]);
-  const [currentCourse, setCurrentCourse] = useState('');
+  const [assignmentsForTheCurrentCourse, setAssignmentsForTheCurrentCourse] =
+    useState<Assignment[]>([]);
+  const [currentCourse, setCurrentCourse] = useState("");
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return alert('No file selected :(');
+    if (!file) return alert("No file selected :(");
 
     const uploadFormData = new FormData();
-    uploadFormData.append('file', file);
-    uploadFormData.append('courseName', formData.courseName);
-    uploadFormData.append('courseNumber', formData.courseNumber);
-    uploadFormData.append('instructor', formData.instructor);
+    uploadFormData.append("file", file);
+    uploadFormData.append("courseName", formData.courseName);
+    uploadFormData.append("courseNumber", formData.courseNumber);
+    uploadFormData.append("instructor", formData.instructor);
 
     try {
-      const resp = await fetch('/api/roadmap/syllabus', {
-        method: 'POST',
+      const resp = await fetch("/api/roadmap/syllabus", {
+        method: "POST",
         body: uploadFormData,
       });
 
       if (resp.ok) {
-        alert('Syllabus uploaded successfully!');
+        alert("Syllabus uploaded successfully!");
         await loadCourses();
       } else {
-        alert('Error uploading file.');
+        alert("Error uploading file.");
       }
     } catch (error) {
       console.error(error);
@@ -56,23 +58,29 @@ export default function Page() {
 
   const loadCourses = async () => {
     try {
-      const resp = await fetch('/api/roadmap/courses');
-      if (!resp.ok) return alert('Error fetching courses');
+      const resp = await fetch("/api/roadmap/courses");
+      if (!resp.ok) return alert("Error fetching courses");
 
       const { courses } = await resp.json();
       setCourses(courses);
     } catch (error) {
-      console.error('Error loading courses:', error);
+      console.error("Error loading courses:", error);
     }
   };
 
   const fetchAssignments = async (courseNumber: string) => {
     try {
-      const resp = await fetch(`/api/roadmap/assignments?courseNumber=${courseNumber}`);
+      const resp = await fetch(
+        `/api/roadmap/assignments?courseNumber=${courseNumber}`
+      );
       const data = await resp.json();
-      setAssignmentsForTheCurrentCourse(data.assignments || []);
+      console.log(data);
+      console.log(data.assignmentsForTheCourseFromDB);
+      setAssignmentsForTheCurrentCourse(
+        data.assignmentsForTheCourseFromDB || []
+      );
     } catch (err) {
-      console.error('Failed to load assignments:', err);
+      console.error("Failed to load assignments:", err);
     }
   };
 
@@ -118,19 +126,22 @@ export default function Page() {
               placeholder="Instructor"
               className="border rounded-md px-4 py-2"
             />
-
             <div className="col-span-3">
               <p className="text-sm text-gray-600">Upload syllabus</p>
               <input type="file" onChange={handleUpload} />
             </div>
           </div>
-
           <div className="flex justify-end gap-2">
-            <button onClick={() => setShowForm(false)} className="bg-gray-200 px-4 py-2 rounded">
+            <button
+              onClick={() => setShowForm(false)}
+              className="bg-gray-200 px-4 py-2 rounded"
+            >
               Cancel
             </button>
             <button
-              onClick={() => alert('Please upload the file to complete submission')}
+              onClick={() =>
+                alert("Please upload the file to complete submission")
+              }
               className="bg-green-600 text-white px-4 py-2 rounded"
             >
               Submit Course
@@ -146,7 +157,6 @@ export default function Page() {
           onChange={(e) => {
             const selectedId = e.target.value;
             setSelectedCourse(selectedId);
-
             const selected = courses.find((c) => c.id === selectedId);
             if (selected) setCurrentCourse(selected.courseNumber);
           }}
@@ -165,6 +175,11 @@ export default function Page() {
 
       {/* Calendar Component */}
       <Calendar assignments={assignmentsForTheCurrentCourse} />
+
+      <GeneratePlan
+        assignments={assignmentsForTheCurrentCourse}
+        course={selectedCourse}
+      ></GeneratePlan>
     </div>
   );
 }

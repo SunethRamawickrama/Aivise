@@ -23,7 +23,33 @@ model Course {
   courseNumber String
   instructor   String
   fileUrl      String
-  userId       String
-  assignments  Json[]   // Store assignments as an array of JSON objects
+  userId       String         // coming from the clerk authentication
+  assignments  Assignment[]   
+  schedules    Schedule[] @relation("CourseSchedules")
+}
+
+model Assignment {
+  id                 String   @id @default(uuid())
+  name               String
+  dueDate            DateTime
+  effortNotes        String
+  estimatedEffort    String
+  courseId           String
+  course             Course   @relation(fields: [courseId], references: [id])
+  schedules Schedule[]
+}
+
+model Schedule {
+  id              String   @id @default(uuid())
+  task            String
+  content         String?  // Helper questions, resources, instructions, etc.
+  dueDate         DateTime
+  
+  assignmentId    String     // Stores the original assignment this task refers to
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+
+  courseId        String
+  course          Course @relation("CourseSchedules", fields: [courseId], references: [id])      
+  completed       Boolean  @default(false)
 }
 
