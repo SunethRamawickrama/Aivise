@@ -14,14 +14,18 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const { courseName, courseNumber, instructor, file } = Object.fromEntries(formData);
+    const { courseName, courseNumber, instructor, file } =
+      Object.fromEntries(formData);
 
     if (
       typeof courseName !== "string" ||
       typeof courseNumber !== "string" ||
       typeof instructor !== "string"
     ) {
-      return NextResponse.json({ error: "Missing or invalid course data" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing or invalid course data" },
+        { status: 400 }
+      );
     }
 
     if (!file || typeof file === "string") {
@@ -47,7 +51,10 @@ export async function POST(req: NextRequest) {
     const supabaseResp = await fetch(fileUrl);
 
     if (!supabaseResp.ok) {
-      return NextResponse.json({ error: "Failed to download file" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Failed to download file" },
+        { status: 400 }
+      );
     }
 
     const contentType = supabaseResp.headers.get("content-type");
@@ -60,7 +67,9 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           parts: [
-            { text: "Extract a list of assignments including their name and due date from the following syllabus. Also, try to estimate how long each assignment might take, based on the description, materials, or schedule. Format it like a JSON array with fields: assignmentName, dueDate, estimatedEffort, effortNotes." },
+            {
+              text: "Extract a list of assignments including their name and due date(MM-DD-YYYY format) from the following syllabus. Also, try to estimate how long each assignment might take, based on the description, materials, or schedule. Format it like a JSON array with fields: assignmentName, dueDate, estimatedEffort, effortNotes.",
+            },
             {
               inlineData: {
                 mimeType: contentType || "application/pdf",
@@ -72,46 +81,74 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-   
-
-
-    const text = await result.response.text(); 
+    const text = await result.response.text();
     console.log("Gemini output:", text);
-
 
     let assignmentData: any[] = [];
 
-    const fixedText = text.trim().replace(/```json|```/g, '');
-
+    const fixedText = text.trim().replace(/```json|```/g, "");
 
     try {
-    
       console.log("Before passing");
       assignmentData = JSON.parse(fixedText);
       console.log("After passing");
-    } 
-    
-    catch (e) {
+    } catch (e) {
       return NextResponse.json({ error: "", raw: text }, { status: 400 });
-    } 
+    }
 
-    if (!Array.isArray(assignmentData) || !assignmentData.every(item => typeof item === "object")) {
-        return NextResponse.json({ error: "Gemini response is not a valid array of assignment objects", raw: text }, { status: 400 });
+    if (
+      !Array.isArray(assignmentData) ||
+      !assignmentData.every((item) => typeof item === "object")
+    ) {
+      return NextResponse.json(
+        {
+          error: "Gemini response is not a valid array of assignment objects",
+          raw: text,
+        },
+        { status: 400 }
+      );
     }
 
     console.log("Parsed assignmentData:", assignmentData);
 
     const course = await prisma.course.create({
-        data: {
-          courseName,
-          courseNumber,
-          instructor,
-          fileUrl,
-          userId,
-          assignments: (assignmentData), // Converting to JSON array
-        },
-      });
+      data: {
+        courseName,
+        courseNumber,
+        instructor,
+        fileUrl,
+        userId,
+      },
+    });
 
+    const assignmentsForTheCourse = await Promise.all(
+      assignmentData.map((assignment: any) =>
+        prisma.assignment.create({
+          data: {
+            name: assignment.assignmentName,
+            dueDate: new Date(assignment.dueDate),
+            estimatedEffort: assignment.estimatedEffort,
+            effortNotes: assignment.effortNotes,
+            courseId: course.id,
+          },
+        })
+      )
+    );
+
+    const currentCourseId = course.id;
+
+    await prisma.course.update({
+      where: {
+        id: currentCourseId,
+      },
+      data: {
+        assignments: {
+          connect: assignmentsForTheCourse.map((assignment) => ({
+            id: assignment.id,
+          })),
+        },
+      },
+    });
 
     return NextResponse.json({ success: true, course }, { status: 200 });
   } catch (err: any) {

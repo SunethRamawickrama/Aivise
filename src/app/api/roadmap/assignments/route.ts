@@ -14,7 +14,10 @@ export async function GET(req: NextRequest) {
     const courseNumber = searchParams.get("courseNumber");
 
     if (!courseNumber) {
-      return NextResponse.json({ error: "Missing courseNumber" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing courseNumber" },
+        { status: 400 }
+      );
     }
 
     const course = await prisma.course.findFirst({
@@ -28,11 +31,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const assignments = course.assignments || [];
+    const assignmentsForTheCourseFromDB =
+      (await prisma.assignment.findMany({
+        where: {
+          courseId: course.id,
+        },
+      })) || [];
 
-    return NextResponse.json({ assignments }, { status: 200 });
+    console.log(assignmentsForTheCourseFromDB);
+
+    return NextResponse.json(
+      { assignmentsForTheCourseFromDB },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("Error fetching assignments:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
