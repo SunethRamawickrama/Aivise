@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import Calendar from "./components/Calendar";
 import { Assignment } from "./components/Calendar";
 import GeneratePlan from "./components/GeneratePlan";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
 
 type Course = {
   id: string;
@@ -95,91 +98,93 @@ export default function Page() {
   }, [currentCourse]);
 
   return (
-    <div className="space-y-4">
-      {/* Add Course Button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-      >
-        ➕ Add Course
-      </button>
-
-      {/* Course Form */}
-      {showForm && (
-        <div className="border p-4 rounded-lg shadow-md bg-white space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              name="courseName"
-              onChange={handleFormDataChange}
-              placeholder="Course Name"
-              className="border rounded-md px-4 py-2"
-            />
-            <input
-              name="courseNumber"
-              onChange={handleFormDataChange}
-              placeholder="Course Number"
-              className="border rounded-md px-4 py-2"
-            />
-            <input
-              name="instructor"
-              onChange={handleFormDataChange}
-              placeholder="Instructor"
-              className="border rounded-md px-4 py-2"
-            />
-            <div className="col-span-3">
-              <p className="text-sm text-gray-600">Upload syllabus</p>
-              <input type="file" onChange={handleUpload} />
+    <>
+      <Navbar></Navbar>
+      <div className="space-y-4">
+        {/* Add Course Button */}
+        <button
+          onClick={() => setShowForm(true)}
+          className=" mt-4 ml-8 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          ➕ Add Course
+        </button>
+        {/* Course Form */}
+        {showForm && (
+          <div className="ml-8 mr-8 t-2 border p-4 rounded-lg shadow-md bg-white space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                name="courseName"
+                onChange={handleFormDataChange}
+                placeholder="Course Name"
+                className="border rounded-md px-4 py-2"
+              />
+              <input
+                name="courseNumber"
+                onChange={handleFormDataChange}
+                placeholder="Course Number"
+                className="border rounded-md px-4 py-2"
+              />
+              <input
+                name="instructor"
+                onChange={handleFormDataChange}
+                placeholder="Instructor"
+                className="border rounded-md px-4 py-2"
+              />
+              <div className="col-span-3">
+                <p className="text-sm text-gray-600">Upload syllabus</p>
+                <input type="file" onChange={handleUpload} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowForm(false)}
+                className="bg-gray-200 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() =>
+                  alert("Please upload the file to complete submission")
+                }
+                className="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Submit Course
+              </button>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setShowForm(false)}
-              className="bg-gray-200 px-4 py-2 rounded"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() =>
-                alert("Please upload the file to complete submission")
-              }
-              className="bg-green-600 text-white px-4 py-2 rounded"
-            >
-              Submit Course
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Course Selector */}
-      <div className="relative w-full max-w-sm">
-        <select
-          value={selectedCourse}
-          onChange={(e) => {
-            const selectedId = e.target.value;
-            setSelectedCourse(selectedId);
-            const selected = courses.find((c) => c.id === selectedId);
-            if (selected) setCurrentCourse(selected.courseNumber);
-          }}
-          className="w-full border rounded-lg px-4 py-2"
-        >
-          <option value="" disabled>
-            Select a course
-          </option>
-          {courses.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.courseNumber} - {course.courseName}
+        )}
+        {/* Course Selector */}
+        <div className=" ml-8 relative w-full max-w-sm">
+          <select
+            value={selectedCourse}
+            onChange={(e) => {
+              const selectedId = e.target.value;
+              setSelectedCourse(selectedId);
+              const selected = courses.find((c) => c.id === selectedId);
+              if (selected) setCurrentCourse(selected.courseNumber);
+            }}
+            className="w-full border rounded-lg px-4 py-2"
+          >
+            <option value="" disabled>
+              Select a course
             </option>
-          ))}
-        </select>
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.courseNumber} - {course.courseName}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Calendar Component */}
+        <Calendar assignments={assignmentsForTheCurrentCourse} />
+        <GeneratePlan
+          assignments={assignmentsForTheCurrentCourse}
+          course={selectedCourse}
+        ></GeneratePlan>
+        <Link href={`/schedule`}>
+          <Button>Go to schedule</Button>
+        </Link>
       </div>
-
-      {/* Calendar Component */}
-      <Calendar assignments={assignmentsForTheCurrentCourse} />
-
-      <GeneratePlan
-        assignments={assignmentsForTheCurrentCourse}
-        course={selectedCourse}
-      ></GeneratePlan>
-    </div>
+    </>
   );
 }

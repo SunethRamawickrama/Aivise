@@ -1,5 +1,6 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import React, { useEffect, useState } from "react";
 
 interface Skill {
@@ -42,58 +43,59 @@ export default function CampusToolPage() {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-12">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">
-          Welcome to the Campus Opportunities & Resources
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          Explore top skills, internships insights, and practice for technical
-          interviews.
-        </p>
-      </div>
-
-      {/* Skills Section */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-4 text-blue-600">
-          🔥 Top Internship Skills
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {skills.map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center"
-            >
-              <p className="text-lg font-medium">
-                {item.skill.replace(/_/g, " ")}
-              </p>
-              <p className="text-sm text-gray-500">{item.count} mentions</p>
-            </div>
-          ))}
+    <>
+      <Navbar></Navbar>
+      <div className="p-8 max-w-6xl mx-auto space-y-12">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">
+            Welcome to the Campus Opportunities & Resources
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Explore top skills, internships insights, and practice for technical
+            interviews.
+          </p>
         </div>
-      </section>
-
-      {/* LeetCode Section */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-4 text-green-600">
-          🧠 Practice LeetCode Problems
-        </h2>
-        <ul className="space-y-3">
-          {problems.map((problem, idx) => (
-            <li key={idx}>
-              <a
-                href={problem.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline hover:text-blue-700"
+        {/* Skills Section */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600">
+            🔥 Top Internship Skills
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {skills.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center"
               >
-                {problem.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+                <p className="text-lg font-medium">
+                  {item.skill.replace(/_/g, " ")}
+                </p>
+                <p className="text-sm text-gray-500">{item.count} mentions</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        {/* LeetCode Section */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-4 text-green-600">
+            🧠 Practice LeetCode Problems
+          </h2>
+          <ul className="space-y-3">
+            {problems.map((problem, idx) => (
+              <li key={idx}>
+                <a
+                  href={problem.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline hover:text-blue-700"
+                >
+                  {problem.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </>
   );
 }
