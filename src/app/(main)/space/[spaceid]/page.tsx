@@ -1,12 +1,18 @@
 import React from "react";
 import Canvas from "@/app/(main)/space/[spaceid]/_components/Canvas";
+import Navbar from "@/components/Navbar";
 
-export default async function SingleSpacePage({ params }: { params: { spaceid: string } }) {
+export default async function SingleSpacePage({
+  params,
+}: {
+  params: { spaceid: string };
+}) {
   const { spaceid } = params;
 
   return (
-  <>
-    <Canvas spaceId={spaceid} />
-  </>
-  )
+    <>
+      <Navbar></Navbar>
+      <Canvas spaceId={spaceid} />
+    </>
+  );
 }
